@@ -6,7 +6,15 @@
         <progress-bar :type="status" :size="'large'" :value="currentImg" :max="maxImg" :show-label="false"></progress-bar>
       </div>
     </div>
-    <isotope ref="isotope" :options='options' :list="list" v-images-loaded="{events: getLoadingCallBack(), settings: {background: '.bgtest'}}">
+
+    <div @click="showTest=!showTest" v-images-loaded="{events: getLoadingCallBack(), settings: {background: '.bgtest'}}">
+      <div v-if="showTest">
+        <img src="https://raw.githubusercontent.com/JordanDelcros/OBJImg/master/examples/resources/schema.jpg" />
+      </div>
+      No images cont
+    </div>
+
+    <isotope ref="isotope" :options='options' :list="list">
       <!--v-images-loaded="{events: { on: getLoadingCallBack(), progress: function() { console.log('test progress...'); }}, background:'.bgtest'}"-->
         <div v-for="element in list" :key="element.id" class="item">
           {{element.name}}
@@ -53,6 +61,7 @@ export default {
   name: 'hello',
   data () {
     return {
+        showTest: false,
       list: names.map((name, id)=>{return {name, id, src : getImageSrc()}}),
       loading: false,
       maxImg: 0,
@@ -72,6 +81,7 @@ export default {
   methods:{
     getLoadingCallBack () {
       return {
+          no_images: () => {alert('no images');},
         progress: (instance, img ) => {
             console.log('in progress..');
           this.loading = true

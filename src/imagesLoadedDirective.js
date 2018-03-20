@@ -72,6 +72,14 @@ function applyImagesLoaded (el, binding) {
 
     const oldcontextImages = el.__imagesLoaded__.context
     if (isEqual(oldcontextImages, contextImages)) {
+        if( oldcontextImages.length == 0 && contextImages.length == 0 ) {
+            if( typeof binding == 'object' && typeof binding['value'] == 'object' ) {
+                if( typeof binding['value']['events'] != 'undefined' && typeof binding['value']['events']['no_images'] == 'function' ) {
+                    binding['value']['events']['no_images']();
+                }
+                return;
+            }
+        }
         return
     }
 
