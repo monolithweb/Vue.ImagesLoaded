@@ -5,13 +5,13 @@
         Loding images: {{currentImg}} of {{maxImg}}
         <progress-bar :type="status" :size="'large'" :value="currentImg" :max="maxImg" :show-label="false"></progress-bar>
       </div>
-      
     </div>
-
-    <isotope ref="isotope" :options='options' :list="list" v-images-loaded:on="getLoadingCallBack()">
+    <isotope ref="isotope" :options='options' :list="list" v-images-loaded="{events: getLoadingCallBack(), settings: {background: '.bgtest'}}">
+      <!--v-images-loaded="{events: { on: getLoadingCallBack(), progress: function() { console.log('test progress...'); }}, background:'.bgtest'}"-->
         <div v-for="element in list" :key="element.id" class="item">
           {{element.name}}
           <img :src="element.src" alt="Not found">
+          <div class="bgtest" style="background: url(https://raw.githubusercontent.com/JordanDelcros/OBJImg/master/examples/resources/schema.jpg); width: 10px; height: 10px;">h</div>
         </div>
     </isotope>
     <button v-for="sort in ['name','id']" @click="$refs.isotope.sort(sort)">Filter by {{sort}}</button>
@@ -73,6 +73,7 @@ export default {
     getLoadingCallBack () {
       return {
         progress: (instance, img ) => {
+            console.log('in progress..');
           this.loading = true
           this.currentImg++
           this.maxImg = instance.images.length

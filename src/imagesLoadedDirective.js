@@ -17,11 +17,23 @@ function isEqual (firstArray, secondArray) {
 
 function checkFunction(callBack, message=''){
     if (typeof callBack !=='function'){
-        throw `imageLoaded directive error: objet ${callBack} should be a function ${message}`
+        throw `imageLoaded directive error: object ${callBack} should be a function ${message}`
     }
 }
 
-function registerImageLoaded(imgLoad, {value, arg, modifiers}) {   
+function registerImageLoaded(imgLoad, {value, arg, modifiers}) {
+    //console.log('arg', arg, value, typeof value.on, modifiers);
+
+    if( !arg && typeof value == 'object' ) {
+        if( typeof value['events'] != 'undefined' ) {
+            for( var key in value['events'] ) {
+                let cb = value['events'][key];
+                imgLoad['on'](key, (inst, img) => setTimeout(() => cb(inst, img)))
+            }
+        }
+        return;
+    }
+
     if (!arg) {
         checkFunction(value)
         imgLoad.on('always', (inst) => setTimeout(() => value(inst)) )
@@ -33,15 +45,31 @@ function registerImageLoaded(imgLoad, {value, arg, modifiers}) {
     const getCallBack = hasModifier ? (key) => {return value;} : (key) => value[key];
 
     for (var key in keys) {
+        console.log('key', key);
         const callBack = getCallBack(key)
         checkFunction(callBack, !hasModifier? `property ${key} of ${value}` : '')
         imgLoad[arg](key, (inst, img) => setTimeout(() => callBack(inst, img)))
     } 
 }
 
-function applyImagesLoaded (el, binding) { 
-    const newContext = imagesLoaded( el );
-    const contextImages = newContext.images.map(img => {return {img: img.img, src: img.img.src} })
+function applyImagesLoaded (el, binding) {
+
+    console.log(el, binding);
+
+    let settings = {};
+    if( typeof binding.value == 'object' && typeof binding.value['settings'] == 'object' )
+        settings = binding.value.settings;
+
+
+    console.log('settings', settings, typeof binding['settings'], binding);
+    const newContext = imagesLoaded( el, settings );
+
+    const contextImages = newContext.images.map( (img,k) => {
+        return {img: (typeof img['element'] == 'undefined' ? img.img : img.element), src: img.img.src}
+    })
+    //return;
+
+
     const oldcontextImages = el.__imagesLoaded__.context
     if (isEqual(oldcontextImages, contextImages)) {
         return
