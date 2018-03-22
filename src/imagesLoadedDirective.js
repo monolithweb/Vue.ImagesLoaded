@@ -22,7 +22,6 @@ function checkFunction(callBack, message=''){
 }
 
 function registerImageLoaded(imgLoad, {value, arg, modifiers}) {
-    //console.log('arg', arg, value, typeof value.on, modifiers);
 
     if( !arg && typeof value == 'object' ) {
         if( typeof value['events'] != 'undefined' ) {
@@ -45,7 +44,6 @@ function registerImageLoaded(imgLoad, {value, arg, modifiers}) {
     const getCallBack = hasModifier ? (key) => {return value;} : (key) => value[key];
 
     for (var key in keys) {
-        console.log('key', key);
         const callBack = getCallBack(key)
         checkFunction(callBack, !hasModifier? `property ${key} of ${value}` : '')
         imgLoad[arg](key, (inst, img) => setTimeout(() => callBack(inst, img)))
@@ -53,15 +51,11 @@ function registerImageLoaded(imgLoad, {value, arg, modifiers}) {
 }
 
 function applyImagesLoaded (el, binding) {
-
-    console.log(el, binding);
-
     let settings = {};
     if( typeof binding.value == 'object' && typeof binding.value['settings'] == 'object' )
         settings = binding.value.settings;
 
 
-    console.log('settings', settings, typeof binding['settings'], binding);
     const newContext = imagesLoaded( el, settings );
 
     const contextImages = newContext.images.map( (img,k) => {
